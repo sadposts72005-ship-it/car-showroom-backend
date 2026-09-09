@@ -1,0 +1,59 @@
+[
+  {
+    "id": "car-1788647825908",
+    "brand": "BMW",
+    "brandAr": "بي إم دبليو",
+    "model": "M3 Competition",
+    "year": 2024,
+    "price": 1000000,
+    "originalPrice": 2500000,
+    "discount": 1500000,
+    "isOffer": true,
+    "offerBadge": "وفر 80000 الف",
+    "color": "أحمر تورنادو",
+    "mileage": "0 كم (زيرو)",
+    "transmission": "M Steptronic 8 سرعات",
+    "fuelType": "بنزين",
+    "horsepower": "510 حصان",
+    "acceleration": "3.8 ثانية (0-100 كم/س)",
+    "topSpeed": "290 كم/س",
+    "engine": "3.0L M TwinPower Turbo",
+    "videoUrl": null,
+    "images": [
+      "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "سيارة بي إم دبليو M3 كومبيتيشن 2024 بالأداء الرياضي الفائق والتحكم الدقيق على المنعطفات وحلبات السباق.",
+    "hotspots": [
+      {
+        "id": "engine-pt",
+        "title": "المحرك والأداء",
+        "subtitle": "510 حصان",
+        "description": "محرك قوي بتقنيات متطورة يوفر تسارعاً فورياً وثباتاً مذهلاً.",
+        "x": 0.3,
+        "y": 0.52,
+        "category": "performance",
+        "icon": "speed"
+      },
+      {
+        "id": "lights-pt",
+        "title": "المصابيح التكيفية",
+        "subtitle": "Full Matrix LED",
+        "description": "إضاءة ذكية متكيفة مع المنعطفات وحركة الطريق.",
+        "x": 0.22,
+        "y": 0.58,
+        "category": "design",
+        "icon": "lightbulb"
+      },
+      {
+        "id": "cockpit-pt",
+        "title": "المقصورة الذكية",
+        "subtitle": "شاشة عرض رقمية متطورة",
+        "description": "نظام ترفيهي رقمي مع مقاعد مريحة مكسوة بالجلد الفاخر.",
+        "x": 0.52,
+        "y": 0.45,
+        "category": "tech",
+        "icon": "desktop"
+      }
+    ]
+  }
+]
