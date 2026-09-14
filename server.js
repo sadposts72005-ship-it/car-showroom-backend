@@ -187,7 +187,7 @@ app.post('/api/cars', (req, res) => {
   const newCarData = req.body;
 
   const newCar = {
-    id: 'car-' + Date.now(),
+    id: newCarData.id || ('car-' + Date.now()),
     brand: newCarData.brand || 'غير محدد',
     brandAr: newCarData.brandAr || newCarData.brand,
     model: newCarData.model || 'موديل غير محدد',
