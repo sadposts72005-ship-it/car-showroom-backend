@@ -14,9 +14,11 @@ app.use(express.json());
 
 // Static uploads folder
 const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (_) {}
 app.use('/uploads', express.static(uploadsDir));
 
 // Multer Storage Configuration
@@ -371,15 +373,19 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-// Start Server
-const server = app.listen(PORT, () => {
-  console.log(`🚗 Car Showroom Backend running on http://localhost:${PORT}`);
-});
+// Start Server for local development, export app for Vercel
+if (!process.env.VERCEL) {
+  const server = app.listen(PORT, () => {
+    console.log(`🚗 Car Showroom Backend running on http://localhost:${PORT}`);
+  });
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`⚠️ المنفذ ${PORT} مستخدم بالفعل من قبل عملية أخرى! قم بإغلاق التطبيق السابق أولاً.`);
-  } else {
-    console.error('Server error:', err);
-  }
-});
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`⚠️ المنفذ ${PORT} مستخدم بالفعل من قبل عملية أخرى!`);
+    } else {
+      console.error('Server error:', err);
+    }
+  });
+}
+
+module.exports = app;
