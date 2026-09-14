@@ -298,10 +298,12 @@ app.post('/api/bookings', (req, res) => {
       message: `رقم الهاتف يجب أن يتكون من 11 رقماً بالضبط (أنت كتبت ${customerPhone.length} أرقام)` 
     });
   }
+
+  const bookings = getBookings();
   const newBooking = {
     id: 'booking-' + Date.now(),
     customerName: customerName.trim(),
-    customerPhone: customerPhone.trim(),
+    customerPhone: cleanPhone,
     preferredDate: preferredDate ? preferredDate.trim() : null,
     notes: notes ? notes.trim() : '',
     carId: carId || null,
