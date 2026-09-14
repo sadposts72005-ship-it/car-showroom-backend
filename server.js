@@ -288,7 +288,14 @@ app.post('/api/bookings', (req, res) => {
     return res.status(400).json({ success: false, message: 'الاسم ورقم الهاتف مطلوبان لإتمام الحجز' });
   }
 
-  const bookings = getBookings();
+  // Strict 11-digit numeric phone validation
+  const cleanPhone = String(customerPhone).trim().replace(/\D/g, '');
+  if (cleanPhone.length !== 11) {
+    return res.status(400).json({ 
+      success: false, 
+      message: `رقم الهاتف يجب أن يتكون من 11 رقماً بالضبط (أنت كتبت ${customerPhone.length} أرقام)` 
+    });
+  }
   const newBooking = {
     id: 'booking-' + Date.now(),
     customerName: customerName.trim(),
