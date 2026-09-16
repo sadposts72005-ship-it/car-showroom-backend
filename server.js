@@ -280,25 +280,19 @@ app.post('/api/search/smart', async (req, res) => {
 app.post('/api/admin/login', (req, res) => {
   const { email, password } = req.body;
 
-  if (email === 'admin@carshowroom.com' && password === 'admin123') {
-    return res.json({
-      success: true,
-      token: 'admin-token-' + Date.now(),
-      admin: {
-        name: 'مدير المعرض',
-        email: 'admin@carshowroom.com',
-        role: 'SUPER_ADMIN'
-      }
-    });
-  }
+  // Strong Admin Credentials
+  const isValidAdmin =
+    (email === 'admin@silverauto.com' && password === 'Silver#Admin@2026!VIP') ||
+    (email === 'admin@gtrcars.com' && password === 'GTR#Admin@2026!VIP') ||
+    (email === 'admin@carshowroom.com' && password === 'Silver#Admin@2026!VIP');
 
-  if ((email === 'admin' || email === 'admin@gmail.com') && password === 'admin') {
+  if (isValidAdmin) {
     return res.json({
       success: true,
       token: 'admin-token-' + Date.now(),
       admin: {
-        name: 'مدير المعرض',
-        email: 'admin@carshowroom.com',
+        name: 'مدير عام المعرض',
+        email: email,
         role: 'SUPER_ADMIN'
       }
     });
@@ -306,7 +300,7 @@ app.post('/api/admin/login', (req, res) => {
 
   return res.status(401).json({
     success: false,
-    message: 'بيانات الدخول غير صحيحة. البريد أو كلمة المرور خاطئة.'
+    message: 'بيانات الدخول غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة المرور المشفرة.'
   });
 });
 
