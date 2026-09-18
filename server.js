@@ -80,6 +80,7 @@ const CarSchema = new mongoose.Schema({
   topSpeed: { type: String, default: '240 كم/س' },
   engine: { type: String, default: '2.0L Turbo' },
   videoUrl: { type: String, default: null },
+  loopVideoUrl: { type: String, default: null },
   images: { type: [String], default: [] },
   description: { type: String, default: '' },
   hotspots: { type: Array, default: [] }
@@ -337,6 +338,7 @@ app.post('/api/cars', async (req, res) => {
     topSpeed: newCarData.topSpeed || '240 كم/س',
     engine: newCarData.engine || '2.0L Turbo',
     videoUrl: newCarData.videoUrl || null,
+    loopVideoUrl: newCarData.loopVideoUrl || null,
     images: Array.isArray(newCarData.images) && newCarData.images.length > 0
       ? newCarData.images
       : ['https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80'],
