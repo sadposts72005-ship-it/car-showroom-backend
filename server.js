@@ -137,15 +137,10 @@ app.get('/api/health', async (req, res) => {
   res.json({ status: 'ok', database: isConnected ? 'MongoDB' : 'Local', totalCars: count });
 });
 
-// GET all cars (with 30-sec in-memory cache)
+// GET all cars (always fresh from MongoDB, no caching)
 app.get('/api/cars', async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   const { brand, offer, minPrice, maxPrice } = req.query;
-  const hasFilters = brand || offer || minPrice || maxPrice;
-
-  // Use cache only for unfiltered requests
-  if (!hasFilters && _getCarsCache && (Date.now() - _getCarsCacheTime) < CARS_CACHE_TTL) {
-    return res.json({ success: true, count: _getCarsCache.length, cars: _getCarsCache });
-  }
 
   let cars = [];
   if (isConnected) {
@@ -167,7 +162,6 @@ app.get('/api/cars', async (req, res) => {
     if (maxPrice) cars = cars.filter(c => c.price <= Number(maxPrice));
   }
 
-  if (!hasFilters) { _getCarsCache = cars; _getCarsCacheTime = Date.now(); }
   res.json({ success: true, count: cars.length, cars });
 });
 
