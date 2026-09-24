@@ -17,24 +17,32 @@ const MONGODB_URI = process.env.MONGODB_URI ||
   'mongodb+srv://sadposts72005_db_user:6b9-nZ9R_uk.rE4@cluster0.sovvyjz.mongodb.net/silver_showroom?retryWrites=true&w=majority&appName=Cluster0';
 
 let isConnected = false;
+let connectingPromise = null;
 
 async function connectToDatabase() {
-  if (isConnected || mongoose.connection.readyState === 1) {
-    isConnected = true;
+  if (isConnected && mongoose.connection.readyState === 1) {
     return;
   }
-  try {
-    await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 3000, // reduced from 6000
-      connectTimeoutMS:        3000,
-      maxPoolSize:             5,
-    });
-    isConnected = true;
-    console.log('✅ MongoDB Atlas connected');
-  } catch (err) {
-    console.error('⚠️  MongoDB error:', err.message);
-    isConnected = false;
+  if (connectingPromise) {
+    return connectingPromise;
   }
+  connectingPromise = (async () => {
+    try {
+      await mongoose.connect(MONGODB_URI, {
+        serverSelectionTimeoutMS: 10000,
+        connectTimeoutMS:        10000,
+        maxPoolSize:             5,
+      });
+      isConnected = true;
+      console.log('✅ MongoDB Atlas connected');
+    } catch (err) {
+      console.error('⚠️  MongoDB error:', err.message);
+      isConnected = false;
+    } finally {
+      connectingPromise = null;
+    }
+  })();
+  return connectingPromise;
 }
 connectToDatabase();
 
@@ -242,12 +250,15 @@ app.post('/api/cars', async (req, res) => {
         ],
   };
 
-  // Invalidate cache
-  _getCarsCache = null;
-
-  if (isConnected) {
-    try { await CarModel.findOneAndUpdate({ id: car.id }, car, { upsert: true, new: true }); }
-    catch (err) { console.error('Save car error:', err.message); }
+  if (isConnected || mongoose.connection.readyState === 1) {
+    try {
+      await CarModel.findOneAndUpdate({ id: car.id }, car, { upsert: true, new: true });
+      console.log('✅ Car saved to MongoDB:', car.id, car.brand, car.model);
+    } catch (err) {
+      console.error('Save car MongoDB error:', err.message);
+    }
+  } else {
+    console.warn('⚠️ MongoDB not connected when saving car:', car.id);
   }
   const local = readLocalCars();
   const idx = local.findIndex(c => c.id === car.id);
@@ -260,12 +271,14 @@ app.post('/api/cars', async (req, res) => {
 // PUT update car
 app.put('/api/cars/:id', async (req, res) => {
   const update = { ...req.body, id: req.params.id };
-  _getCarsCache = null;
   let updated = null;
 
-  if (isConnected) {
-    try { updated = cleanCar(await CarModel.findOneAndUpdate({ id: req.params.id }, update, { new: true }).lean()); }
-    catch (err) { console.error('Update car error:', err.message); }
+  if (isConnected || mongoose.connection.readyState === 1) {
+    try {
+      updated = cleanCar(await CarModel.findOneAndUpdate({ id: req.params.id }, update, { new: true }).lean());
+    } catch (err) {
+      console.error('Update car MongoDB error:', err.message);
+    }
   }
   const local = readLocalCars();
   const idx = local.findIndex(c => c.id === req.params.id);
@@ -276,12 +289,14 @@ app.put('/api/cars/:id', async (req, res) => {
 
 // DELETE car
 app.delete('/api/cars/:id', async (req, res) => {
-  _getCarsCache = null;
   let deleted = null;
 
-  if (isConnected) {
-    try { deleted = cleanCar(await CarModel.findOneAndDelete({ id: req.params.id }).lean()); }
-    catch (err) { console.error('Delete car error:', err.message); }
+  if (isConnected || mongoose.connection.readyState === 1) {
+    try {
+      deleted = cleanCar(await CarModel.findOneAndDelete({ id: req.params.id }).lean());
+    } catch (err) {
+      console.error('Delete car MongoDB error:', err.message);
+    }
   }
   const local = readLocalCars();
   const idx = local.findIndex(c => c.id === req.params.id);
